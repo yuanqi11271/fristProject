@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!--利用MyBatis Generator里面的Xml文件格式，复制成为resource的xml文件，并进行修改-->
+<generatorConfiguration>
+    <!--找到MySQL驱动包的路径-->
+<!--    <classPathEntry location="C:\Users\ZB\.m2\repository\mysql\mysql-connector-java\5.1.47\mysql-connector-java-5.1.47.jar" />-->
+    <!--配置连接MySQL数据库的信息-->
+    <context id="fristdb" targetRuntime="MyBatis3">
+
+        <!-- 生成的Java文件的编码 -->
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <!-- 格式化java代码 -->
+        <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+
+        <plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+            <property name="searchString" value="Example$"/>
+            <property name="replaceString" value="Criteria"/>
+        </plugin>
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1/fristdb?serverTimezone=GMT%2B8"
+                        userId="root"
+                        password="root">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!--配置各个文件的相对路径和项目路径-->
+        <!--产生实体类，需要和App是同级的-->
+        <javaModelGenerator targetPackage="com.yuanqi.datasource.generatory.entiry" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!--映射文件，一定是在resources中的-->
+        <sqlMapGenerator targetPackage="com.yuanqi.datasource.generatory.mapper" targetProject="src/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <!--底层dao-->
+        <javaClientGenerator type="ANNOTATEDMAPPER" targetPackage="com.yuanqi.datasource.generatory.mapper" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!-- 商品信息表 -->
+        <table schema="fristdb" tableName="commodity" domainObjectName="Commodity"
+               enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="true" />
+            <generatedKey column="CommodityId" sqlStatement="MySql" identity="true" />
+        </table>
+
+        <!-- 商品信息表 -->
+        <table schema="fristdb" tableName="customer" domainObjectName="User"
+               enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="true" />
+            <generatedKey column="CustomerId" sqlStatement="MySql" identity="true" />
+        </table>
+    </context>
+</generatorConfiguration>
