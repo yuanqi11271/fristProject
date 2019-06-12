@@ -1,22 +1,10 @@
-### Example user template
+##ignore this file##
 /target/
-# IntelliJ project files
-.idea
-*.iml
-out
-gen
-# Created by .ignore support plugin (hsz.mobi)
 
+### IntelliJ IDEA ###
+.idea
 .settings/
 *.settings/
-logs*
-*.log
-rebel.xml
-### Example user template template
-### Example user template
-
-# IntelliJ project files
-.idea
+*.iws
 *.iml
-out
-gen
+*.ipr
