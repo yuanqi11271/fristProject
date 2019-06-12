@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<script type="text/javascript" src="../js/jquery-3.2.1.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+</head>
+<body>
+    <input type="button" value="支付宝登录" onclick=logon()></button>
+
+    <script>
+        function logon(){
+            $.ajax({
+                type: "GET",//提交方式，分为get和post两种
+                url: "http://localhost:3001/user/logon",//路径，就是你要交互的后台的路径
+                data: "",//参数，提交到后台的参数
+                dataType: "jsonp",//后台返回的类型
+                success: function(data){    //交互成功后的回调函数，data为返回的内容
+                    alert(1)   //清空resText里面的所有内容
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

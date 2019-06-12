@@ -67,4 +67,14 @@ public class UserServiceImpl implements UserService {
         }
         return response.buildSuccess(optionalUser.get());
     }
+
+    /**
+     * 登录
+     * @return
+     */
+    @Override
+    public BaseResponse<Object> logon() {
+
+        return null;
+    }
 }

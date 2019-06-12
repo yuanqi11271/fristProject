@@ -2,6 +2,7 @@ package com.yuanqi.service.user.controller;
 
 import com.yuanqi.common.request.user.UserCreateRequest;
 import com.yuanqi.common.response.BaseResponse;
+import com.yuanqi.service.user.service.LogonService;
 import com.yuanqi.service.user.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,20 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    LogonService logonService;
+
+    /**
+     * 登录
+     * @return
+     */
+    @GetMapping("/logon")
+    public BaseResponse logon(){
+        BaseResponse<Object> response = new BaseResponse<>();
+        response.buildSuccess();
+        return response;
+    }
 
     @PostMapping("/insertUser")
     @ApiOperation(value = "新增用户",notes = "用户注册")

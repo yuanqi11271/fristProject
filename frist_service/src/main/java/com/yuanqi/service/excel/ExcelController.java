@@ -1,5 +1,8 @@
 package com.yuanqi.service.excel;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.yuanqi.common.response.BaseResponse;
 import com.yuanqi.common.util.POIUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -12,8 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * @Author: yq
@@ -25,15 +31,26 @@ public class ExcelController {
 
     @PostMapping("/importExcel")
     public BaseResponse importExcel(@RequestParam("file") MultipartFile file){
+        HashMap<Object, Object> newHashMap = Maps.newLinkedHashMap();
         try {
             InputStream inputStream = file.getInputStream();
             Workbook workbook = WorkbookFactory.create(inputStream);
-            Map<Integer, List<List<? super Object>>> map = POIUtils.upload(file, workbook);
+            List<Map<String,Object>> arrList = POIUtils.upload(file, workbook);
+            for (Map<String, Object> map : arrList) {
+                ArrayList<Object> objects = Lists.newArrayList();
+                String team = (String) map.get("参赛团队");
+                String school = (String) map.get("学校");
+                for (Map<String, Object> objectMap : arrList) {
+                    if (team.equals(objectMap.get("参赛团队")) && school.equals(objectMap.get("学校"))){
+                        objects.add(objectMap);
+                        newHashMap.put(team+school,objects);
+                    }
+                }
+            }
 
-            return new BaseResponse().buildSuccess(map);
         } catch (IOException | InvalidFormatException e) {
             e.printStackTrace();
         }
-        return null;
+        return new BaseResponse().buildSuccess(newHashMap);
     }
 }

@@ -13,4 +13,6 @@ public interface UserService {
     BaseResponse findUserAll();
 
     BaseResponse findUser(String userId);
+
+    BaseResponse<Object> logon();
 }

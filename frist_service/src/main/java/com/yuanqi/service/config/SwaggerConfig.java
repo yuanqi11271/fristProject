@@ -42,7 +42,7 @@ public class SwaggerConfig {
                 .title("用户信息 API")
                 .description("用户的增删改查")
                 .termsOfServiceUrl("www.baidu.com")
-                .contact("bacyang")
+                .contact("yuanqi")
                 .version("0.0.1")
                 .build();
     }
@@ -70,7 +70,7 @@ public class SwaggerConfig {
                 .title("导入报表 API")
                 .description("导入报表")
                 .termsOfServiceUrl("www.baidu.com")
-                .contact("bacyang")
+                .contact("yuanqi")
                 .version("0.0.1")
                 .build();
     }
@@ -98,7 +98,7 @@ public class SwaggerConfig {
                 .title("商品信息 API")
                 .description("商品增删改查")
                 .termsOfServiceUrl("www.baidu.com")
-                .contact("bacyang")
+                .contact("yuanqi")
                 .version("0.0.1")
                 .build();
     }

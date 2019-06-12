@@ -1,5 +1,7 @@
 package com.yuanqi.common.util;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
@@ -11,10 +13,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.zip.CheckedInputStream;
 
 /**
  * @Author: yq
@@ -25,19 +25,15 @@ import java.util.Map;
 public class POIUtils {
 
     /**
-     *
      * @param file 上传的文件
-     * @param path 文件保存路径
+     * @param
      * @return
      */
     // TODO 获取合并单元格的值
-    public static Map<Integer,List<List<? super Object>>> upload(MultipartFile file, Workbook workbook) {
-        //创建读取excel的类(区分excel2003和2007文件)
-//        Workbook workbook = createWorkBook(file,path);
-        //excel每一行看做一个List,作为value;sheet页数作为key
-        Map<Integer,List<List<? super Object>>> map = new HashMap<>();
-        // 得到sheet页
-        for(int i = 0;i<workbook.getNumberOfSheets();i++) {
+    public static List upload(MultipartFile file, Workbook workbook) {
+
+        List<LinkedHashMap<String, Object>> list = new ArrayList<>();
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
             // 得到Excel的行数
             int totalRows = sheet.getPhysicalNumberOfRows();
@@ -47,52 +43,69 @@ public class POIUtils {
                 totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
             }
             // 循环Excel行数
-            List<List<? super Object>> list = new ArrayList<>();
             for (int r = 1; r < totalRows; r++) {
                 Row row = sheet.getRow(r);
                 if (row == null) {
                     continue;
                 }
                 // 循环Excel的列
-                if (row != null) {
-                    List<? super Object> valueList = new ArrayList<>();
-                    for (int c = 0; c < totalCells; c++) {
-                        Cell cell = row.getCell(c);
-                        DecimalFormat df = new DecimalFormat("0");
-                        try {
-                            if (null != cell) {
-                                if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                                    String value = df.format(cell.getNumericCellValue());
-                                    valueList.add(value);
-                                } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                                    if (!StringUtils.isEmpty(cell.getStringCellValue())) {
-                                        valueList.add(cell.getStringCellValue());
-                                    }
-                                } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-                                    valueList.add("");
-                                } else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
-                                    valueList.add(cell.getBooleanCellValue());
-                                } else if(cell.getCellType() == Cell.CELL_TYPE_ERROR) {
-                                    valueList.add("非法字符");
-                                } else if(cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
-                                    valueList.add(cell.getCellFormula());
-                                };
-                            }
-                        } catch (Exception e) {
-                            log.error("\n==========解析Excel单元格异常==========", e);
-                        }
+                LinkedHashMap<String, Object> hashMap = Maps.newLinkedHashMap();
+                for (int c = 0; c < totalCells; c++) {
+                    Object valueObject = null;
+                    Cell cell = row.getCell(c);
+                    if (cell == null) {
+                        continue;
                     }
-                    list.add(valueList);
+                    DecimalFormat df = new DecimalFormat("0");
+                    try {
+                        if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+                            String value = df.format(cell.getNumericCellValue());
+                            valueObject = value;
+                        } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+                            if (!StringUtils.isEmpty(cell.getStringCellValue())) {
+                                valueObject = cell.getStringCellValue();
+                            }
+                        } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+                            valueObject = "";
+                        } else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+                            valueObject = cell.getBooleanCellValue();
+                        } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
+                            valueObject = "非法字符";
+                        } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+                            valueObject = cell.getCellFormula();
+                        }
+                        String checkStr = check(c);
+                        hashMap.put(checkStr, valueObject);
+
+                    } catch (Exception e) {
+                        log.error("\n==========解析Excel单元格异常==========", e);
+                    }
                 }
+                list.add(hashMap);
             }
-            map.put(i, list);
         }
-        return map;
+        return list;
     }
 
+    public static String check(Integer c) {
+        switch (c) {
+            case 0:
+                return "参赛团队";
+            case 1:
+                return "姓名";
+            case 2:
+                return "身份";
+            case 3:
+                return "学校";
+            default:
+                return "";
+        }
+    }
+
+
     public static Workbook createWorkBook(MultipartFile file, String path) {
-        multipartToFile(file,path);
-        File f = createNewFile(file,path);
+        multipartToFile(file, path);
+        File f = createNewFile(file, path);
         Workbook workbook = null;
         try {
             InputStream is = new FileInputStream(f);
@@ -105,7 +118,7 @@ public class POIUtils {
     }
 
     public static void multipartToFile(MultipartFile multfile, String path) {
-        File file = createNewFile(multfile,path);
+        File file = createNewFile(multfile, path);
         try {
             multfile.transferTo(file);
         } catch (IOException e) {
@@ -113,11 +126,11 @@ public class POIUtils {
         }
     }
 
-    public static File createNewFile(MultipartFile multfile,String path) {
+    public static File createNewFile(MultipartFile multfile, String path) {
         String fileName = multfile.getOriginalFilename();
         File file = new File(path + fileName);
         File parentFile = file.getParentFile();
-        if(!parentFile.exists()) parentFile.mkdirs();
+        if (!parentFile.exists()) parentFile.mkdirs();
         try {
             file.createNewFile();
         } catch (IOException e) {
